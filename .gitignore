@@ -13,6 +13,28 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
+# Generated data and model files
+synthetic_data/credit_data.json
+synthetic_data/credit_model.json
+synthetic_data/input.json
+synthetic_data/example_*.json
+
+# Generated EZKL artifacts
+ezkl/credit_data.json
+ezkl/credit_model.json
+ezkl/input.json
+ezkl/credit_model.onnx
+ezkl/ezkl_input.json
+ezkl/settings.json
+ezkl/model.compiled
+ezkl/kzg.srs
+ezkl/vk.key
+ezkl/pk.key
+ezkl/witness.json
+ezkl/proof.json
+ezkl/CreditVerifier.sol
+ezkl/calldata.json
+
 # RustRover
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
