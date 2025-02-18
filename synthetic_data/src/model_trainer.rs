@@ -18,8 +18,7 @@ impl CreditScoreModel {
         let features = Array2::from_shape_vec(
             (data.features.len(), data.features[0].len()),
             data.features.iter().flatten().cloned().collect(),
-        )
-        .unwrap();
+        )?;
 
         let targets = Array1::from_vec(data.scores.clone());
 
