@@ -2,6 +2,7 @@
 name = "synthetic_data"
 version = "0.1.0"
 edition = "2021"
+description = "Library for generating synthetic credit data and ML models"
 
 [dependencies]
 rand = "0.8.5"
