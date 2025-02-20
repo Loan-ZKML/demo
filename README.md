@@ -1,2 +1,3 @@
-# cli
-CLI client for loan collateral requests and verification
+# CLI client
+- Loan collateral requests and verification
+- Integration testing
