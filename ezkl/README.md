@@ -44,7 +44,7 @@ The system implements a tiered collateral structure based on credit scores:
 
 ### Ethereum Address Test Strategy
 
-For testing the system, we recommend using specific Ethereum addresses consistently:
+For testing the system, using specific Ethereum addresses consistently:
 
 - **UNKNOWN Tier**: Any address not in the training data, e.g., `0x1111111111111111111111111111111111111111`
 - **LOW Tier**: `0x2222222222222222222222222222222222222222`
