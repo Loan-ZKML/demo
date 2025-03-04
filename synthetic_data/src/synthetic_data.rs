@@ -1,6 +1,5 @@
 use anyhow::Result;
-use ndarray::{Array1, Array2, Axis};
-use ndarray_rand::RandomExt;
+use ndarray::{Array1, Axis};
 use rand::thread_rng;
 use rand_distr::{Distribution, Normal, Uniform};
 use serde::{Deserialize, Serialize};

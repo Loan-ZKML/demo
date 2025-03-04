@@ -1,5 +1,5 @@
 use anyhow::Result;
-use ndarray::{s, Array1, Array2, Axis};
+use ndarray::{s, Array1, Array2};
 use serde_json::json;
 use std::fs::File;
 use std::io::Write;
