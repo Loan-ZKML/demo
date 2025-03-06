@@ -6,15 +6,21 @@ use std::path::Path;
 use std::process::Command;
 use direct_ezkl::run_ezkl_process;
 
-use synthetic_data::{generate_synthetic_data, save_data_as_json};
+use synthetic_data::{generate_synthetic_data, generate_synthetic_data_with_test_addresses, save_data_as_json};
 use synthetic_data::model_trainer::CreditScoreModel;
 
 fn main() -> Result<()> {
-    // Step 1: Generate synthetic data
-    println!("Generating synthetic credit data...");
-    let data = generate_synthetic_data(1000)?;
+    // Step 1: Generate synthetic data with test addresses
+    println!("Generating synthetic credit data with test addresses...");
+    let data = generate_synthetic_data_with_test_addresses(1000)?;
     save_data_as_json(&data, "credit_data.json")?;
     println!("Saved synthetic data to credit_data.json");
+    
+    // Log information about the test addresses
+    println!("Included test addresses for different collateral tiers:");
+    println!("  LOW tier (100% collateral): 0x2222222222222222222222222222222222222222");
+    println!("  MEDIUM tier (90% collateral): 0x3333333333333333333333333333333333333333");
+    println!("  HIGH tier (80% collateral): 0x4444444444444444444444444444444444444444");
 
     // Step 2: Train model
     println!("Training credit score model...");
