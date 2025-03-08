@@ -81,68 +81,35 @@ fn calculate_score(features: &[f32], noise: f32) -> f32 {
 /// with predetermined features to ensure they map to specific credit score tiers.
 /// This is useful for testing the collateral tier system.
 pub fn generate_synthetic_data_with_test_addresses(num_samples: usize) -> Result<CreditData> {
-    // First generate random data
     let mut data = generate_synthetic_data(num_samples)?;
-    
-    // Create address mapping
-    let mut address_mapping = HashMap::new();
-    
-    // Test address features - format: [tx_count, wallet_age, avg_balance, repayment_history]
-    // Each feature is normalized to 0-1 range
-    
-    // Define test addresses for different tiers
-    let low_tier_address = "0x2222222222222222222222222222222222222222".to_string();
-    let medium_tier_address = "0x3333333333333333333333333333333333333333".to_string();
-    let high_tier_address = "0x4444444444444444444444444444444444444444".to_string();
-    let another_high_tier_address = "0x5555555555555555555555555555555555555555".to_string();
-    
+
+    let low_tier_address = "0x2222222222222222222222222222222222222222";
+    let medium_tier_address = "0x3333333333333333333333333333333333333333";
+    let high_tier_address = "0x4444444444444444444444444444444444444444";
+    let another_high_tier_address = "0x5555555555555555555555555555555555555555";
+
     // LOW tier address (score < 0.4)
     let low_tier_features = vec![0.1, 0.2, 0.1, 0.0];
-    
+
     // MEDIUM tier address (score between 0.4 and 0.7)
     let medium_tier_features = vec![0.5, 0.4, 0.5, 1.0];
-    
+
     // HIGH tier address (score > 0.7)
     let high_tier_features = vec![0.9, 0.8, 0.7, 1.0];
-    
+
     // Another HIGH tier address
     let another_high_tier_features = vec![0.85, 0.9, 0.8, 1.0];
-    
-    // Calculate scores for each test address using the same formula as in the main function
-    let low_tier_score = calculate_score(&low_tier_features, 0.0); // No noise for test addresses
-    let medium_tier_score = calculate_score(&medium_tier_features, 0.0);
-    let high_tier_score = calculate_score(&high_tier_features, 0.0);
-    let another_high_tier_score = calculate_score(&another_high_tier_features, 0.0);
-    
-    // Add test addresses to the data
-    let low_index = data.features.len();
-    data.features.push(low_tier_features);
-    data.scores.push(low_tier_score);
-    address_mapping.insert(low_tier_address, low_index);
-    
-    let medium_index = data.features.len();
-    data.features.push(medium_tier_features);
-    data.scores.push(medium_tier_score);
-    address_mapping.insert(medium_tier_address, medium_index);
-    
-    let high_index = data.features.len();
-    data.features.push(high_tier_features);
-    data.scores.push(high_tier_score);
-    address_mapping.insert(high_tier_address, high_index);
-    
-    let another_high_index = data.features.len();
-    data.features.push(another_high_tier_features);
-    data.scores.push(another_high_tier_score);
-    address_mapping.insert(another_high_tier_address, another_high_index);
-    
-    // Add address mapping to the data
-    data.address_mapping = Some(address_mapping);
-    
+
+    add_address_to_data(&mut data, low_tier_address, low_tier_features)?;
+    add_address_to_data(&mut data, medium_tier_address, medium_tier_features)?;
+    add_address_to_data(&mut data, high_tier_address, high_tier_features)?;
+    add_address_to_data(&mut data, another_high_tier_address, another_high_tier_features)?;
+
     Ok(data)
 }
 
 /// Add a specific Ethereum address to the dataset with custom features
-/// 
+///
 /// This allows adding any number of addresses to the dataset with specific
 /// features that will result in desired credit scores.
 pub fn add_address_to_data(
