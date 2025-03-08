@@ -28,14 +28,30 @@ For testing and development purposes, we use a consistent set of Ethereum addres
 - **MEDIUM Tier**: `0x3333333333333333333333333333333333333333`
 - **HIGH Tier**: `0x4444444444444444444444444444444444444444`
 
-### Training Data Integration
+### How Addresses Qualify for Discounts
 
-When training the model, include the test addresses with appropriate feature values that would result in the desired credit scores:
+In this system, addresses qualify for collateral discounts through their credit scores, which are calculated from financial metrics and verified through zero-knowledge proofs. The system does not directly whitelist specific addresses for discounts. Instead:
+
+1. The model evaluates wallet activity metrics to compute a credit score
+2. This score determines which collateral tier the address qualifies for
+3. The proof verifies this score without revealing the underlying data
+4. The smart contract assigns the appropriate tier based on the verified score
+
+The test addresses mentioned (`0x2222...`, `0x3333...`, etc.) are not hardcoded into the production smart contracts. They are simply examples used during development and testing to verify different tiers are working correctly.
+
+### Adding More Qualifying Addresses
+
+To add more addresses that qualify for collateral discounts, you have two options:
+
+#### Option 1: Synthetic Data Approach (for development/testing)
+
+When generating synthetic data, you can include specific addresses with feature values that will result in desired credit scores:
 
 ```rust
-// Example feature values for test addresses (pseudo-code)
+// Example feature values for addresses (pseudo-code)
 // Format: [tx_count, wallet_age, avg_balance, repayment_history]
 
+// Add specific real addresses to the model training data
 // LOW tier address (score < 0.4)
 data.add_record("0x2222222222222222222222222222222222222222", [0.1, 0.2, 0.1, 0.0]);
 
@@ -44,7 +60,52 @@ data.add_record("0x3333333333333333333333333333333333333333", [0.5, 0.4, 0.5, 1.
 
 // HIGH tier address (score > 0.7)
 data.add_record("0x4444444444444444444444444444444444444444", [0.9, 0.8, 0.7, 1.0]);
+
+// Add additional addresses that should qualify for specific tiers
+// Another HIGH tier address
+data.add_record("0x5555555555555555555555555555555555555555", [0.85, 0.9, 0.8, 1.0]);
+
+// You can add as many addresses as needed for testing different scenarios
 ```
+
+This approach is primarily useful for testing and development. In the `synthetic_data` crate, you would modify the `generate_synthetic_data` function to include these specific addresses alongside the randomly generated data.
+
+#### Option 2: Production Approach (for real-world use)
+
+In a production environment, addresses qualify for discounts based on their actual on-chain activity:
+
+1. **Data Collection**: Collect real on-chain data for the address (transaction count, wallet age, etc.)
+2. **Score Calculation**: Use the trained model to calculate the address's credit score
+3. **Proof Generation**: Generate a zero-knowledge proof of this calculation
+4. **On-chain Verification**: Submit the proof to the smart contract, which verifies it and assigns the appropriate tier
+
+To add support for more addresses in production:
+
+1. Expand the data collection pipeline to gather metrics for more addresses
+2. Ensure the model generalizes well to different address activity patterns
+3. Provide tools for users to generate proofs of their own credit scores
+4. Update the smart contract if needed to handle specific edge cases
+
+```rust
+// Example code for generating proof for a new address (pseudo-code)
+fn generate_proof_for_address(address: &str, model: &CreditScoreModel) -> Result<Proof> {
+    // 1. Collect real metrics for this address
+    let metrics = collect_on_chain_metrics(address)?;
+    
+    // 2. Normalize the metrics to match model expectations
+    let normalized_metrics = normalize_metrics(metrics);
+    
+    // 3. Calculate score using the model
+    let score = model.predict(&normalized_metrics);
+    
+    // 4. Generate ZK proof
+    let proof = generate_zk_proof(address, &normalized_metrics, score, model)?;
+    
+    Ok(proof)
+}
+```
+
+Remember that in production, you wouldn't directly assign tiers to addresses in the code. Instead, addresses earn their tier by proving their credit score.
 
 ### Implementation in Smart Contracts
 
