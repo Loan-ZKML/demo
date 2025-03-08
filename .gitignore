@@ -32,7 +32,6 @@ ezkl/vk.key
 ezkl/pk.key
 ezkl/witness.json
 ezkl/proof.json
-ezkl/CreditVerifier.sol
 ezkl/calldata.json
 
 # RustRover
