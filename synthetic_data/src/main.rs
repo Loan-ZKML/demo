@@ -9,10 +9,10 @@ use synthetic_data::{generate_synthetic_data, save_data_as_json};
 use synthetic_data::model_trainer::CreditScoreModel;
 
 fn main() -> Result<()> {
-    // This is just an example of how to use the library.
+    // main provided for testing purposes.
     // In the actual project, this functionality is used by the ezkl crate.
     println!("EXAMPLE: Using synthetic_data library");
-    println!("Note: This is just a demonstration. In practice, use the ezkl crate.");
+    println!("Note: This main() tests this library. In practice, use the ezkl crate.");
     println!("------------------------------------------------------------");
     
     // Generate synthetic data
