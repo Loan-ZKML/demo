@@ -148,7 +148,7 @@ fn main() -> Result<()> {
     println!(" - Verification key: vk.key");
     println!(" - Proving key: pk.key");
     println!(" - Proof: proof.json");
-    println!(" - EVM verifier contract: CreditVerifier.sol");
+    println!(" - EVM verifier contract: Halo2Verifier.sol");
 
     Ok(())
 }

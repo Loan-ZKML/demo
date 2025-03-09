@@ -84,7 +84,7 @@ ezkl prove --witness witness.json --proof-path proof.json --pk-path pk.key --com
 ezkl verify --proof-path proof.json --vk-path vk.key --srs-path kzg.srs
 
 # Create verifier contract
-ezkl create-evm-verifier --vk-path vk.key --sol-code-path CreditVerifier.sol --srs-path kzg.srs
+ezkl create-evm-verifier --vk-path vk.key --sol-code-path Halo2Verifier.sol --srs-path kzg.srs
 
 # Generate calldata
 ezkl encode-evm-calldata --proof-path proof.json --calldata-path calldata.json
@@ -158,11 +158,11 @@ The process generates the following files:
 - `pk.key`: Proving key
 - `witness.json`: Witness
 - `proof.json`: Zero-knowledge proof
-- `CreditVerifier.sol`: Solidity verifier contract
+- `Halo2Verifier.sol`: Solidity verifier contract
 - `calldata.json`: Calldata for on-chain verification
 
 ## Integration with Smart Contracts
 
-The generated Solidity verifier contract (`CreditVerifier.sol`) can be deployed to Ethereum or other EVM-compatible blockchains. This contract verifies zero-knowledge proofs of credit scores without revealing the underlying data.
+The generated Solidity verifier contract (`Halo2Verifier.sol`) can be deployed to Ethereum or other EVM-compatible blockchains. This contract verifies zero-knowledge proofs of credit scores without revealing the underlying data.
 
 For loan contract integration, see the sample interfaces in `docs/overview.md`.

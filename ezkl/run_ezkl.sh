@@ -40,7 +40,7 @@ VK_PATH="vk.key"
 PK_PATH="pk.key"
 WITNESS_PATH="witness.json"
 PROOF_PATH="proof.json"
-VERIFIER_PATH="CreditVerifier.sol"
+VERIFIER_PATH="Halo2Verifier.sol"
 CALLDATA_PATH="calldata.json"
 
 # Ensure the required input files exist

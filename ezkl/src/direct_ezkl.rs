@@ -23,7 +23,7 @@ pub fn run_ezkl_process(working_dir: &Path) -> Result<()> {
     let pk_path = working_dir.join("pk.key");
     let witness_path = working_dir.join("witness.json");
     let proof_path = working_dir.join("proof.json");
-    let verifier_path = working_dir.join("CreditVerifier.sol");
+    let verifier_path = working_dir.join("Halo2Verifier.sol");
     let calldata_path = working_dir.join("calldata.json");
     
     // Check if required input files exist
