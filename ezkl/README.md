@@ -48,7 +48,7 @@ For testing the system, using specific Ethereum addresses consistently:
 
 - **UNKNOWN Tier**: Any address not in the training data, e.g., `0x1111111111111111111111111111111111111111`
 - **LOW Tier**: `0x2222222222222222222222222222222222222222`
-- **MEDIUM Tier**: `0x3333333333333333333333333333333333333333`
+- **MEDIUM Tier**: `0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1` (prv-key: `0x08c216a5cbe31fd3c8095aae062a101c47c0f6110d738b97c5b1572993a2e665`)
 - **HIGH Tier**: `0x4444444444444444444444444444444444444444`
 
 When training the model and generating proofs:

@@ -56,7 +56,7 @@ When using addresses that are part of the training data:
 
 - For UNKNOWN tier (120% collateral): Use any new address not in the training set, e.g., `0x1111111111111111111111111111111111111111`
 - For LOW tier (100% collateral): Use `0x2222222222222222222222222222222222222222`
-- For MEDIUM tier (90% collateral): Use `0x3333333333333333333333333333333333333333`
+- For MEDIUM tier (90% collateral): Use `0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1` (prv-key: `0x08c216a5cbe31fd3c8095aae062a101c47c0f6110d738b97c5b1572993a2e665`)
 - For HIGH tier (80% collateral): Use `0x4444444444444444444444444444444444444444`
 
 ### Testing Approach

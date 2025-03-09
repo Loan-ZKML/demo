@@ -25,7 +25,7 @@ For testing and development purposes, we use a consistent set of Ethereum addres
 
 - **UNKNOWN Tier**: Any address not included in training data, e.g., `0x1111111111111111111111111111111111111111`
 - **LOW Tier**: `0x2222222222222222222222222222222222222222`
-- **MEDIUM Tier**: `0x3333333333333333333333333333333333333333`
+- **MEDIUM Tier**: `0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1` (prv-key: `0x08c216a5cbe31fd3c8095aae062a101c47c0f6110d738b97c5b1572993a2e665`)
 - **HIGH Tier**: `0x4444444444444444444444444444444444444444`
 
 ### How Addresses Qualify for Discounts
@@ -56,7 +56,7 @@ When generating synthetic data, you can include specific addresses with feature 
 data.add_record("0x2222222222222222222222222222222222222222", [0.1, 0.2, 0.1, 0.0]);
 
 // MEDIUM tier address (score between 0.4 and 0.7)
-data.add_record("0x3333333333333333333333333333333333333333", [0.5, 0.4, 0.5, 1.0]);
+data.add_record("0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1", [0.5, 0.4, 0.5, 1.0]);
 
 // HIGH tier address (score > 0.7)
 data.add_record("0x4444444444444444444444444444444444444444", [0.9, 0.8, 0.7, 1.0]);

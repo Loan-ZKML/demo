@@ -6,7 +6,7 @@ use std::path::Path;
 use std::process::Command;
 use direct_ezkl::run_ezkl_process;
 
-use synthetic_data::{generate_synthetic_data, generate_synthetic_data_with_test_addresses, save_data_as_json};
+use synthetic_data::{generate_synthetic_data_with_test_addresses, save_data_as_json};
 use synthetic_data::model_trainer::CreditScoreModel;
 
 fn main() -> Result<()> {
@@ -19,7 +19,7 @@ fn main() -> Result<()> {
     // Log information about the test addresses
     println!("Included test addresses for different collateral tiers:");
     println!("  LOW tier (100% collateral): 0x2222222222222222222222222222222222222222");
-    println!("  MEDIUM tier (90% collateral): 0x3333333333333333333333333333333333333333");
+    println!("  MEDIUM tier (90% collateral): 0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1");
     println!("  HIGH tier (80% collateral): 0x4444444444444444444444444444444444444444");
 
     // Step 2: Train model

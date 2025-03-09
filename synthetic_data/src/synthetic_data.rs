@@ -84,7 +84,7 @@ pub fn generate_synthetic_data_with_test_addresses(num_samples: usize) -> Result
     let mut data = generate_synthetic_data(num_samples)?;
 
     let low_tier_address = "0x2222222222222222222222222222222222222222";
-    let medium_tier_address = "0x3333333333333333333333333333333333333333";
+    let medium_tier_address = "0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1";
     let high_tier_address = "0x4444444444444444444444444444444444444444";
     let another_high_tier_address = "0x5555555555555555555555555555555555555555";
 
