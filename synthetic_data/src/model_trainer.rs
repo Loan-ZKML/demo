@@ -1,10 +1,10 @@
+use std::f32::consts::E;
 use anyhow::Result;
 use ndarray::{s, Array1, Array2};
 use serde_json::json;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-
 use crate::synthetic_data::CreditData;
 
 pub struct CreditScoreModel {
@@ -73,8 +73,15 @@ impl CreditScoreModel {
             for j in 0..self.coefficients.len() {
                 pred += features[[i, j]] * self.coefficients[j];
             }
-            // Clamp predictions to [0, 1] range
-            pred = pred.max(0.0).min(1.0);
+            
+            // Sigmoid function to convert to probability
+            pred = if pred < -20.0 {
+                0.0
+            } else if pred > 20.0 {
+                1.0
+            } else {
+                1.0 / (1.0 + E.powf(-pred))
+            };            
             predictions[i] = pred;
         }
 
