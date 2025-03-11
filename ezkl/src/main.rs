@@ -5,6 +5,9 @@ use std::path::Path;
 use std::process::Command;
 use std::fs;
 
+const CONTRACTS_SRC_PATH: &'static str = "../../contracts/src";
+const CONTRACTS_SCRIPT_PATH: &'static str = "../../contracts/script";
+
 fn main() -> Result<()> {
     // Target address for proof generation
     let target_address = "0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1";
@@ -66,15 +69,14 @@ fn main() -> Result<()> {
 
     // Step 5: Copy artifacts to appropriate directories for the Solidity tests
     println!("Copying artifacts for Solidity tests...");
-
+    
     // Ensure directories exist
-    fs::create_dir_all("src")?;
-    fs::create_dir_all("script")?;
+    fs::create_dir_all(CONTRACTS_SRC_PATH)?;
+    fs::create_dir_all(CONTRACTS_SCRIPT_PATH)?;
 
     // Copy files
-    fs::copy("proof_generation/Halo2Verifier.sol", "src/Halo2Verifier.sol")?;
-    fs::copy("proof_generation/calldata.json", "script/calldata.json")?;
-    fs::copy("proof_generation/proof.json", "script/proof.json")?;
+    fs::copy("proof_generation/Halo2Verifier.sol", format!("{}/Halo2Verifier.sol", CONTRACTS_SRC_PATH))?;
+    fs::copy("proof_generation/calldata.json", format!("{}/calldata.json", CONTRACTS_SCRIPT_PATH))?;
 
     println!("Artifacts copied successfully!");
 
