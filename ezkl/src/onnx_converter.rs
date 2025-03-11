@@ -11,17 +11,15 @@ pub fn convert_json_to_onnx(
     ezkl_input_path: &Path,
 ) -> Result<()> {
     println!("Converting JSON model to ONNX format...");
-    
+
     // Create a temporary Python script to do the conversion
     let script_path = json_model_path.parent().unwrap().join("convert_model.py");
-    
+
     let python_script = r#"
 import json
 import sys
-import numpy as np
 import torch
 import torch.nn as nn
-import onnx
 from torch.onnx import export
 
 # Load model from JSON
