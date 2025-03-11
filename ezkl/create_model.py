@@ -4,11 +4,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.onnx import export
+import time
 
-# Test account address
-test_address = "0x276ef71c8F12508d187E7D8Fcc2FE6A38a5884B1"
-
-# Features for the test address
+# Define features for credit score calculation
 favorable_features = [0.8, 0.7, 0.6, 1.0]  # [tx_count, wallet_age, avg_balance, repayment_history]
 
 # Define a simple model - linear with sigmoid
@@ -41,7 +39,6 @@ input_tensor = torch.tensor([favorable_features], dtype=torch.float32)
 with torch.no_grad():
     score = model(input_tensor).item()
 
-print(f"Test address: {test_address}")
 print(f"Features: {favorable_features}")
 print(f"Calculated score: {score:.4f}")
 print(f"Threshold for favorable rate: 0.5")
@@ -58,13 +55,31 @@ export(
 )
 
 # Create EZKL input
+# Scale the score to be between 0-1000 for easier integer comparison in smart contracts
+scaled_score = int(score * 1000)
+print(f"Scaled score (0-1000): {scaled_score}")
+
 ezkl_input = {
   "input_shapes": [[4]],
   "input_data": [favorable_features],
-  "output_data": [[score]]
+  # This is important - we include the scaled score as a public output
+  # This will become a public input to the verification system
+  "output_data": [[scaled_score / 1000.0]]
 }
 
 with open("proof_generation/input.json", "w") as f:
     json.dump(ezkl_input, f, indent=2)
+
+# Also save metadata for later reference
+metadata = {
+    "features": favorable_features,
+    "score": score,
+    "scaled_score": scaled_score,
+    "timestamp": int(time.time()),
+    "model_version": "1.0.0"
+}
+
+with open("proof_generation/metadata.json", "w") as f:
+    json.dump(metadata, f, indent=2)
 
 print("Model converted to ONNX and input prepared for EZKL")
