@@ -4,10 +4,9 @@ use std::process::Command;
 use std::fs;
 use serde::{Deserialize, Serialize};
 use sha2::{Sha256, Digest};
-use hex;
 
-const CONTRACTS_SRC_PATH: &'static str = "../../contracts/src";
-const CONTRACTS_SCRIPT_PATH: &'static str = "../../contracts/script";
+const CONTRACTS_SRC_PATH: &str = "../../contracts/src";
+const CONTRACTS_SCRIPT_PATH: &str = "../../contracts/script";
 
 // Define structures for metadata
 #[derive(Serialize, Deserialize)]
