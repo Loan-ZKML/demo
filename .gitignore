@@ -33,6 +33,10 @@ ezkl/pk.key
 ezkl/witness.json
 ezkl/proof.json
 ezkl/calldata.json
+ezkl/proof_generation
+ezkl/sol_build
+ezkl/updated*.json
+ezkl/verifier_abi.json
 
 # RustRover
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
