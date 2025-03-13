@@ -1,3 +1,45 @@
+# zkML Demo
+
+[![Rust CI](https://github.com/loan-zkml/demo/actions/workflows/ci.yml/badge.svg)](https://github.com/loan-zkml/demo/actions/workflows/ci.yml)
+
+## Project Overview
+
+This project demonstrates the application of zero-knowledge machine learning (zkML) in privacy-preserving verification systems. It combines Rust implementations with Ethereum smart contracts to create secure, verifiable data processing.
+
+### Core Components
+
+- **synthetic_data**: Generation of synthetic data for testing and demonstration
+- **ezkl**: Zero-knowledge proof generation and verification for machine learning models
+
+## Continuous Integration
+
+The project utilizes GitHub Actions for continuous integration with the following checks:
+
+- **Build**: Ensures all workspace crates compile successfully
+- **Test**: Runs the test suite across all crates
+- **Check**: Verifies code without producing binaries
+- **Clippy**: Enforces Rust's linting rules with no warnings
+
+All these checks must pass for pull requests to be merged, maintaining code quality and project stability.
+
+## Development
+
+A Makefile is provided for convenient development:
+
+```bash
+# Build all crates
+make
+
+# Run tests
+make test
+
+# Run linting
+make clippy
+
+# See all available commands
+make help
+```
+
 # ZKML Credit Scoring System for DeFi Loans
 
 This project implements a privacy-preserving credit scoring system using zero-knowledge machine learning (ZKML) for DeFi loans.
