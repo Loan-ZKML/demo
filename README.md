@@ -1,10 +1,24 @@
-# zkML Demo
-
 [![Rust CI](https://github.com/loan-zkml/demo/actions/workflows/ci.yml/badge.svg)](https://github.com/loan-zkml/demo/actions/workflows/ci.yml)
 
-## Project Overview
+# ZKML Credit Scoring System for DeFi Loans
 
-This project demonstrates the application of zero-knowledge machine learning (zkML) in privacy-preserving verification systems. It combines Rust implementations with Ethereum smart contracts to create secure, verifiable data processing.
+This project implements a privacy-preserving credit scoring system for DeFi loans using zero-knowledge (Halo2) machine learning (ZKML).
+It combines the ML creation and synthetic historical loan transaction history training with Ethereum [loan-ZKML/contracts](https://github.com/loan-ZKML/contracts) Loan smart contracts to verify the ML computations that result in discounted loan collateral requirements.
+
+## Use case
+Users with favorable on-chain loan transaction history generate ZK proofs using public inputs demonstrating their creditworthiness without revealing their private financial data.
+
+- **synthetic_data**: Library that provides synthetic credit data generation and model training
+- **ezkl**: Main entry point that uses synthetic_data library and integrates with EZKL CLI
+- **loan**: CLI interface for the system (in development)
+
+## Workflow
+
+1. Generate synthetic credit data and train a credit scoring model
+2. Convert the model to ONNX format compatible with EZKL
+3. Use EZKL to create zero-knowledge circuits and proofs
+4. Generate a Solidity [verifier](https://github.com/Loan-ZKML/contracts/blob/39f2a849f0a502cd2dc19422fc579e98e03e3f41/src/ZKCreditVerifier.sol#L43) contract  for on-chain verification
+5. Allow users to submit proofs to DeFi lending platforms for better loan terms
 
 ### Core Components
 
@@ -30,35 +44,17 @@ A Makefile is provided for convenient development:
 # Build all crates
 make
 
-# Run tests
+# cargo test --workspace
 make test
 
-# Run linting
+# cargo check --workspace
+make check
+
 make clippy
 
 # See all available commands
 make help
 ```
-
-# ZKML Credit Scoring System for DeFi Loans
-
-This project implements a privacy-preserving credit scoring system using zero-knowledge machine learning (ZKML) for DeFi loans.
-
-## Overview
-
-The system allows users to prove their creditworthiness without revealing their private financial data by using zero-knowledge proofs.
-
-- **synthetic_data**: Library that provides synthetic credit data generation and model training
-- **ezkl**: Main entry point that uses synthetic_data library and integrates with EZKL CLI
-- **loan**: CLI interface for the system (in development)
-
-## How It Works
-
-1. Generate synthetic credit data and train a credit scoring model
-2. Convert the model to ONNX format compatible with EZKL
-3. Use EZKL to create zero-knowledge circuits and proofs
-4. Generate a Solidity verifier contract for on-chain verification
-5. Allow users to submit proofs to DeFi lending platforms for better loan terms
 
 ## Getting Started
 
@@ -72,7 +68,7 @@ The system allows users to prove their creditworthiness without revealing their 
 
 ```bash
 # Clone the repository
-git clone https://github.com/loan-zkml/demo.git
+git clone https://github.com/loan-zkml/Ezkl-ML.git
 cd demo
 
 # Install Python dependencies
