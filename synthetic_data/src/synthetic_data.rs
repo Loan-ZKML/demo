@@ -1,5 +1,4 @@
 use anyhow::Result;
-use ndarray::{Array1, Axis};
 use rand::thread_rng;
 use rand_distr::{Distribution, Normal, Uniform};
 use serde::{Deserialize, Serialize};
@@ -11,23 +10,66 @@ use std::collections::HashMap;
 /// Transforms inputs using the formula: f(x) = 1 / (1 + e^(-x))
 /// The function has a natural S-curve shape and smoothly maps all real inputs to [0, 1]
 /// Handles extreme values to prevent floating-point issues.
-fn sigmoid(x: f32) -> f32 {
+fn sigmoid(x: f32) -> Option<f32> {
     // Handle extreme values to avoid floating-point issues
     // Using a smaller threshold (10.0) to ensure more precise bounds for extreme values
     const EPSILON: f32 = 1e-6f32;
     
     if !x.is_finite() {
         // Handle NaN and infinity
-        0.5f32
-    } else if x > 10.0f32 {
-        // For large positive inputs, return a value very close to 1.0 but not exactly 1.0
-        1.0f32 - EPSILON
-    } else if x < -10.0f32 {
-        // For large negative inputs, return a value very close to 0.0 but not exactly 0.0
-        EPSILON
+        None
     } else {
-        // Normal calculation for reasonable range inputs
-        1.0f32 / (1.0f32 + (-x).exp())
+        let result = if x > 10.0f32 {
+            // For large positive inputs, return a value very close to 1.0 but not exactly 1.0
+            1.0f32 - EPSILON
+        } else if x < -10.0f32 {
+            // For large negative inputs, return a value very close to 0.0 but not exactly 0.0
+            EPSILON
+        } else {
+            // Normal calculation for reasonable range inputs
+            1.0f32 / (1.0f32 + (-x).exp())
+        };
+        Some(result)
+    }
+}
+
+/// Validates a single feature value, ensuring it's finite and within the [0,1] range
+fn validate_feature(x: f32) -> Option<f32> {
+    if x.is_finite() {
+        Some(x.clamp(0.0f32, 1.0f32))
+    } else {
+        None
+    }
+}
+
+/// Validates all features in a slice, ensuring each is valid
+/// Returns None if any feature is invalid
+fn validate_features(features: &[f32]) -> Option<Vec<f32>> {
+    features.iter()
+        .map(|&x| validate_feature(x))
+        .collect()
+}
+
+/// Calculates a weighted score from validated features
+/// Returns None if there aren't exactly 4 features
+fn calculate_weighted_score(features: &[f32]) -> Option<f32> {
+    if features.len() != 4 {
+        return None;
+    }
+    
+    let weights = [0.3f32, 0.2f32, 0.2f32, 0.3f32];
+    Some(features.iter()
+        .zip(weights.iter())
+        .map(|(&f, &w)| f * w)
+        .sum())
+}
+
+/// Processes noise to ensure it's within reasonable bounds
+fn process_noise(noise: f32) -> Option<f32> {
+    if noise.is_finite() {
+        Some(noise.clamp(-5.0f32, 5.0f32))
+    } else {
+        None
     }
 }
 
@@ -44,42 +86,41 @@ pub struct CreditData {
 pub fn generate_synthetic_data(num_samples: usize) -> Result<CreditData> {
     let mut rng = thread_rng();
 
-    // Define distributions for different features
-    let tx_count_dist = Uniform::new(0.0f32, 5000.0f32);
-    let wallet_age_dist = Uniform::new(0.0f32, 365.0f32 * 5.0f32);
-    let avg_balance_dist = Uniform::new(0.0f32, 10000.0f32);
-    let repayment_hist_dist = Uniform::new(0.0f32, 1.0f32);
+    // Define distributions with their normalizers in a single array for better organization
+    let distributions = [
+        (Uniform::new(0.0f32, 5000.0f32), 5000.0f32),
+        (Uniform::new(0.0f32, 365.0f32 * 5.0f32), 365.0f32 * 5.0f32),
+        (Uniform::new(0.0f32, 10000.0f32), 10000.0f32),
+        (Uniform::new(0.0f32, 1.0f32), 1.0f32),
+    ];
 
-    // Generate random features
-    let tx_count =
-        Array1::from_iter((0..num_samples).map(|_| tx_count_dist.sample(&mut rng) / 5000.0f32));
-    let wallet_age = Array1::from_iter(
-        (0..num_samples).map(|_| wallet_age_dist.sample(&mut rng) / (365.0f32 * 5.0f32)),
-    );
-    let avg_balance =
-        Array1::from_iter((0..num_samples).map(|_| avg_balance_dist.sample(&mut rng) / 10000.0f32));
-    let repayment_hist = Array1::from_iter(
-        (0..num_samples).map(|_| f32::round(repayment_hist_dist.sample(&mut rng))),
-    );
-
-    // Combine into features matrix
-    let features = ndarray::stack![Axis(1), tx_count, wallet_age, avg_balance, repayment_hist];
+    // Generate features using iterators in a more compact way
+    let features: Vec<Vec<f32>> = (0..num_samples)
+        .map(|_| {
+            distributions.iter()
+                .map(|(dist, normalizer)| {
+                    let raw_value = dist.sample(&mut rng);
+                    // For the last feature (repayment history), round to 0 or 1
+                    if normalizer == &1.0f32 {  // Just check the normalizer for repayment history
+                        f32::round(raw_value)
+                    } else {
+                        raw_value / normalizer
+                    }
+                })
+                .collect()
+        })
+        .collect();
 
     // Generate synthetic credit scores as a function of features with some noise
     let noise_dist = Normal::new(0.0f32, 0.05f32)?;
-    let scores = features.map_axis(Axis(1), |row| {
-        let score = 0.3f32 * row[0] + 0.2f32 * row[1] + 0.2f32 * row[2] + 0.3f32 * row[3];
-        // Get noise and ensure it's finite and within reasonable bounds
-        let noise = noise_dist.sample(&mut rng).clamp(-1.0f32, 1.0f32);
-        // Scale by 12 to spread the typical [0,1] range across sigmoid's responsive region [-6,6]
-        sigmoid(10.0f32 * (score + noise) - 5.0f32)
-    });
-
-    // Convert to Vec format for serialization
-    let features_vec = features
-        .outer_iter()
-        .map(|row| row.to_vec())
-        .collect::<Vec<_>>();
+    
+    // Calculate scores using the new pure functions
+    let scores: Vec<f32> = features.iter()
+        .map(|feature| {
+            let noise = noise_dist.sample(&mut rng);
+            calculate_score(feature, noise)
+        })
+        .collect();
 
     let feature_names = vec![
         "tx_count".to_string(),
@@ -88,37 +129,25 @@ pub fn generate_synthetic_data(num_samples: usize) -> Result<CreditData> {
         "repayment_history".to_string(),
     ];
 
+
     Ok(CreditData {
-        features: features_vec,
-        scores: scores.to_vec(),
+        features,
+        scores,
         feature_names,
         address_mapping: None,
     })
 }
 
-/// Calculate a credit score based on feature values using the same formula as in generate_synthetic_data
+/// Calculate a credit score based on feature values using a composition of pure functions
 fn calculate_score(features: &[f32], noise: f32) -> f32 {
-    // Calculate weighted score, handling potential NaN or infinity in features
-    let feature_values: Vec<f32> = features.iter()
-        .map(|&x| if x.is_finite() { x.clamp(0.0f32, 1.0f32) } else { 0.5f32 })
-        .collect();
+    // Use a pipeline of pure functions with Option type for proper error handling
+    let result = validate_features(features)
+        .and_then(|valid_features| calculate_weighted_score(&valid_features))
+        .and_then(|score| process_noise(noise).map(|n| score + n))
+        .and_then(|combined| sigmoid(10.0f32 * combined - 5.0f32));
     
-    let score = 0.3f32 * feature_values[0] + 
-                0.2f32 * feature_values[1] + 
-                0.2f32 * feature_values[2] + 
-                0.3f32 * feature_values[3];
-    
-    // Limit extreme noise values to prevent overflow or underflow
-    // Using a smaller range to ensure more predictable results
-    let limited_noise = if noise.is_finite() {
-        noise.clamp(-5.0f32, 5.0f32)
-    } else {
-        0.0f32 // Handle NaN or infinity
-    };
-    
-    // Scale by 10 instead of 12 to make the transition slightly smoother
-    // and center the [0,1] range of scores in sigmoid's responsive region
-    sigmoid(10.0f32 * (score + limited_noise) - 5.0f32)
+    // Default score for invalid inputs
+    result.unwrap_or(0.5f32)
 }
 
 /// Generates synthetic data with specific test addresses included
@@ -207,21 +236,26 @@ mod tests {
     #[test]
     fn test_sigmoid_properties() {
         // Test output range (should always be between 0 and 1)
-        assert!(sigmoid(-100.0f32) > 0.0f32 && sigmoid(-100.0f32) < 1.0f32);
-        assert!(sigmoid(100.0f32) > 0.0f32 && sigmoid(100.0f32) < 1.0f32);
+        assert!(sigmoid(-100.0f32).unwrap() > 0.0f32 && sigmoid(-100.0f32).unwrap() < 1.0f32);
+        assert!(sigmoid(100.0f32).unwrap() > 0.0f32 && sigmoid(100.0f32).unwrap() < 1.0f32);
         
         // Test extremes approach limits but never reach them
         let epsilon = 1e-6f32;
-        assert!(sigmoid(-100.0f32) >= epsilon);  // Very close to 0 but not exactly 0
-        assert!(sigmoid(100.0f32) <= 1.0f32 - epsilon);   // Very close to 1 but not exactly 1
+        assert!(sigmoid(-100.0f32).unwrap() >= epsilon);  // Very close to 0 but not exactly 0
+        assert!(sigmoid(100.0f32).unwrap() <= 1.0f32 - epsilon);   // Very close to 1 but not exactly 1
         
         // Test midpoint property (f(0) = 0.5)
-        assert!((sigmoid(0.0f32) - 0.5f32).abs() < 1e-6f32);
+        assert!((sigmoid(0.0f32).unwrap() - 0.5f32).abs() < 1e-6f32);
         
         // Test symmetry property (f(-x) = 1 - f(x))
         for x in [-5.0f32, -1.0f32, 0.0f32, 1.0f32, 5.0f32].iter() {
-            assert!((sigmoid(-*x) - (1.0f32 - sigmoid(*x))).abs() < 1e-6f32);
+            assert!((sigmoid(-*x).unwrap() - (1.0f32 - sigmoid(*x).unwrap())).abs() < 1e-6f32);
         }
+
+        // Test None case
+        assert!(sigmoid(f32::NAN).is_none());
+        assert!(sigmoid(f32::INFINITY).is_none());
+        assert!(sigmoid(f32::NEG_INFINITY).is_none());
     }
     
     /// Tests credit score calculation with normal input values
