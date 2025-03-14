@@ -1,3 +1,6 @@
+mod direct_ezkl;
+mod onnx_converter;
+
 use anyhow::{Result, Context};
 use std::path::Path;
 use std::process::Command;
@@ -255,6 +258,7 @@ fn create_proof_registry() -> Result<()> {
 
     // Get the credit score from the output data
     // First try to get it from the hex representation in the outputs
+    const SCORE_SCALER: f64 = 1000.0;
     let scaled_score = if let Some(output_hex) = witness["outputs"][0][0].as_str() {
         // Convert from hex to u32
         // The output is a hex string like "1416000000000000000000000000000000000000000000000000000000000000"
@@ -264,10 +268,10 @@ fn create_proof_registry() -> Result<()> {
     } else if let Some(rescaled_output) = witness["pretty_elements"]["rescaled_outputs"][0][0].as_str() {
         // If the pretty_elements path exists and contains a string, parse it
         let float_val = rescaled_output.parse::<f64>().unwrap_or(0.0);
-        (float_val * 1000.0).round() as u32
+        (float_val * SCORE_SCALER).round() as u32
     } else if let Some(float_val) = witness["pretty_elements"]["rescaled_outputs"][0][0].as_f64() {
         // If it's directly a number value
-        (float_val * 1000.0).round() as u32
+        (float_val * SCORE_SCALER).round() as u32
     } else {
         // Fallback - use a default value if we can't extract it
         println!("Warning: Could not extract credit score from witness. Using default value 500.");

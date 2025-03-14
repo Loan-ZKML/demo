@@ -4,6 +4,7 @@ use std::fs;
 use std::process::Command;
 
 /// Converts our JSON model to an ONNX format that EZKL can process
+#[allow(dead_code)]
 pub fn convert_json_to_onnx(
     json_model_path: &Path,
     json_input_path: &Path,

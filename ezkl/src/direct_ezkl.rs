@@ -7,6 +7,7 @@ use crate::onnx_converter::convert_json_to_onnx;
 /// This module provides source code EZKL integration taking advantage of EZKL Rust implementation.
 /// When using the source code integration mode, the execution does not rely on a shell script
 /// It's used as an alternative to the shell script.
+#[allow(dead_code)]
 pub fn run_ezkl_process(working_dir: &Path) -> Result<()> {
     println!("Running EZKL processing directly...");
     println!("Working directory: {}", working_dir.display());
@@ -161,6 +162,7 @@ pub fn run_ezkl_process(working_dir: &Path) -> Result<()> {
 }
 
 /// Helper function to execute EZKL commands
+#[allow(dead_code)]
 fn execute_ezkl(args: &[&str], working_dir: &Path) -> Result<()> {
     // For debugging - print command
     let cmd_str = format!("ezkl {}", args.join(" "));
